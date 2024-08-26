@@ -1,4 +1,4 @@
-import { HtmlHTMLAttributes, ImgHTMLAttributes } from "react"
+import { ImgHTMLAttributes } from "react"
 
 type Props = {
     src: string
