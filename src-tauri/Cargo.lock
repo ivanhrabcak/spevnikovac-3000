@@ -3088,7 +3088,9 @@ dependencies = [
  "nom",
  "reqwest",
  "scraper",
+ "serde",
  "serde_json",
+ "tauri",
  "tokio",
  "xml",
 ]

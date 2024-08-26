@@ -14,6 +14,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    "types": ["vite-plugin-svgr/client"],
+
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,

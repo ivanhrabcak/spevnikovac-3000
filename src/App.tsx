@@ -1,51 +1,77 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/tauri";
 import "./App.css";
+import Cross from './assets/x.svg?react';
+import Dots from './assets/kebab-horizontal.svg?react';
+import { TextNode } from "./components/ChordsPreview";
+import { PhysicalButton } from "./components/PhysicalButton";
+
+type LyricsWithChords = {artist: string, song_name: string, text: TextNode[]};
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  const [songs, setSongs] = useState<Record<string, TextNode[] | 'loading'>>({});
+  const [url, setUrl] = useState("");
+  const [isLoading, setLoading] = useState(false);
 
-  async function greet() {
+  const addSong = async () => {
+    setLoading(true);
     // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke("greet", { name }));
+    const result = (await invoke("fetch", { url }) as LyricsWithChords);
+
+    console.log(result);
+
+    const newItem: Record<string, TextNode[]> = {};
+    newItem[`${result.song_name} - ${result.artist}`] = result.text;
+
+    setLoading(false);
+    setSongs({
+      ...songs,
+      ...newItem  
+    });
   }
 
   return (
     <div className="container">
-      <h1>Welcome to Tauri!</h1>
-
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
+      <h1>Pridaj pesničky:</h1>
       <form
         className="row"
         onSubmit={(e) => {
           e.preventDefault();
-          greet();
+          addSong();
         }}
       >
         <input
           id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
+          onChange={(e) => setUrl(e.currentTarget.value)}
+          placeholder="URL..."
         />
-        <button type="submit">Greet</button>
+        <button type="submit">Pridať</button>
       </form>
-
-      <p>{greetMsg}</p>
+      <div className="page-content">
+        {isLoading && <Dots className="loading" />}
+        {Object.keys(songs).length != 0 && 
+          <div className="container center-items songs-list">
+            Zoznam pridaných pesničiek:
+            {Object.keys(songs).map(songName => (
+              <div className="song-display">
+                <b>{songName}</b>
+                <Cross 
+                  onClick={() => {
+                    setSongs((songs) => {
+                      delete songs[songName]
+                      console.log('deleted ' + songName)
+                      console.log(songs)
+                      return {...songs}
+                    })
+                  }}
+                  className="remove-icon" 
+                />
+              </div>
+            ))}
+          </div>
+        }
+      </div>
+      <PhysicalButton className="launch-button offset" text="Generuj" />
     </div>
   );
 }

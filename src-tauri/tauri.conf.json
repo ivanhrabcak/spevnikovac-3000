@@ -6,7 +6,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "spevnik-frontend",
+    "productName": "spevnikovac-3000",
     "version": "0.1.0"
   },
   "tauri": {
@@ -19,7 +19,7 @@
     },
     "windows": [
       {
-        "title": "spevnik-frontend",
+        "title": "Spevníkovač 3000",
         "width": 800,
         "height": 600
       }
@@ -30,7 +30,7 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.spevnik-frontend.app",
+      "identifier": "com.spevnikovac-3000.app",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",

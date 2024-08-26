@@ -23,7 +23,7 @@
 
 .container {
   margin: 0;
-  padding-top: 10vh;
+  padding-top: 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -32,7 +32,6 @@
 
 .logo {
   height: 6em;
-  padding: 1.5em;
   will-change: filter;
   transition: 0.75s;
 }
@@ -93,6 +92,7 @@ button {
 
 #greet-input {
   margin-right: 5px;
+  width: 30%;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -113,4 +113,85 @@ button {
   button:active {
     background-color: #0f0f0f69;
   }
+}
+
+.chords-preview-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+}
+
+.line-container {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+
+.remove-icon {
+  width: 22px;
+  height: 22px;
+  aspect-ratio: 1 / 1;
+  color: #EE4B2B;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 12px;
+  border: 1px solid lightgray;
+
+}
+
+.remove-icon:hover {
+  background-color: lightgray;
+}
+
+.song-display {
+  display: flex;
+  justify-content: space-between;
+  width: 50%;
+  align-items: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.song-display:not(:last-child) {
+  border-bottom: 1px solid lightgray;
+  
+}
+
+.loading {
+  width: 20px;
+  height: 20px;
+  align-self: center;
+  margin: 20px;
+}
+
+.songs-list {
+  padding-top: 25px;
+}
+
+.center-items {
+  align-items: center;
+  justify-content: center;
+}
+
+sup {
+  font-size: 13px;
+  position: relative;
+  top: -5px;
+  right: -4px;
+}
+
+.offset {
+  margin-top: 10px;
+}
+
+.launch-button {
+  width: 90vw;
+  max-width: 800px;
+  align-self: center;
+}
+
+.page-content {
+  height: 80vh;
 }
