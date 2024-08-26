@@ -1,3 +1,13 @@
+# Running
+```shell
+git clone --recursive https://github.com/ivanhrabcak/spevnikovac-3000-frontend.git
+```
+ 
+ 
+```shell
+yarn tauri dev
+```
+
 # Tauri + React + Typescript
 
 This template should help get you started developing with Tauri, React and Typescript in Vite.
