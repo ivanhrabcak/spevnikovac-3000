@@ -1,0 +1,3 @@
+[submodule "src-tauri/spevnik"]
+	path = src-tauri/spevnik
+	url = https://github.com/ivanhrabcak/spevnik
