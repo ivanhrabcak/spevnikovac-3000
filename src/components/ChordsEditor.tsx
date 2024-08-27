@@ -1,6 +1,6 @@
 import { DndContext } from "@dnd-kit/core";
 import { invoke } from "@tauri-apps/api";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Chord } from "./chords-editor/Chord";
 import { PossibleChordPlace } from "./chords-editor/PossibleChordPlace";
 

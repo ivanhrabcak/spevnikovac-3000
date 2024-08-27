@@ -2,7 +2,6 @@ import { invoke } from "@tauri-apps/api";
 import { useContext, useState } from "react";
 import { TextNode } from "../components/ChordsEditor";
 import Cross from "../assets/x.svg?react";
-import { PhysicalButton } from "../components/PhysicalButton";
 import { SongsContext } from "../components/context/songs-context";
 import { useNavigate } from "react-router-dom";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
