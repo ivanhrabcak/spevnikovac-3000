@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { useContext, useState } from "react";
-import { TextNode } from "../components/ChordsPreview";
+import { TextNode } from "../components/ChordsEditor";
 import Cross from "../assets/x.svg?react";
 import { PhysicalButton } from "../components/PhysicalButton";
 import { SongsContext } from "../components/context/songs-context";
@@ -40,9 +40,6 @@ export const AddSongsRoute = () => {
   return (
     <div className="flex flex-col select-none h-full items-center gap-4">
       <ProgressTrackBar currentStep={0} />
-      {/* <div className="text-5xl font-bold text-center mt-5">
-        Pridaj pesničky:
-      </div> */}
       <form
         className="flex items-center w-[50%]"
         onSubmit={(e) => {

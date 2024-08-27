@@ -1,5 +1,5 @@
 import { createContext, Dispatch, ReactNode, useState } from "react";
-import { TextNode } from "../ChordsPreview";
+import { TextNode } from "../ChordsEditor";
 import React from "react";
 
 type Songs = Record<string, TextNode[]>;

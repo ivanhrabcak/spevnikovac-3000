@@ -4,7 +4,8 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AddSongsRoute } from "./routes/add-songs";
 import { SongsContextProvider } from "./components/context/songs-context";
-import { ChooseSongRoute } from "./routes/choose-song";
+import { EditSongsRoute } from "./routes/edit-songs";
+import { ExportRoute } from "./routes/export";
 
 const router = createBrowserRouter([
   {
@@ -13,7 +14,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/choose",
-    element: <ChooseSongRoute />,
+    element: <EditSongsRoute />,
+  },
+  {
+    path: "/export",
+    element: <ExportRoute />,
   },
 ]);
 

@@ -5,3 +5,11 @@
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
 }
+
+#root {
+  height: 100vh;
+}
+
+body {
+  height: 100%;
+}

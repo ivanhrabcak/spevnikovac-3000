@@ -5,21 +5,30 @@ type Props = {
   title: ReactNode;
   children: ReactNode;
   isShown?: boolean;
+  className?: string;
 };
 
-export const Collapsible = ({ title, children, isShown: isShown_ }: Props) => {
+export const Collapsible = ({
+  title,
+  children,
+  className,
+  isShown: isShown_,
+}: Props) => {
   const [isShown, setShown] = useState(isShown_ ?? false);
 
   const [parent] = useAutoAnimate();
 
   return (
     <div
-      className="collapse collapse-arrow flex flex-col items-center"
+      className={
+        "collapse collapse-arrow flex flex-col items-center " +
+        (className ?? "")
+      }
       onClick={!isShown ? () => setShown(!isShown) : undefined}
     >
-      <input type="checkbox" checked={isShown} />
+      <input type="checkbox" readOnly={false} checked={isShown} />
       <div
-        className="text-xl font-bold collapse-title"
+        className="text-xl font-bold collapse-title px-0"
         onClick={isShown ? () => setShown(!isShown) : undefined}
       >
         {title}
