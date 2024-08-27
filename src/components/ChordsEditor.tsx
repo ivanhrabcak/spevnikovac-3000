@@ -66,17 +66,12 @@ export const ChordsEditor = ({ chords, setChords }: Props) => {
       return;
     }
 
-    setChords(
-      lines
-        .map((l) => l.filter((n) => n != "PossibleChordPlace"))
-        .flatMap((l) => [...l, "Newline"])
-    );
+    const nodes = lines
+      .map((l) => l.filter((n) => n != "PossibleChordPlace"))
+      .flatMap((l) => [...l, "Newline"]) as TextNode[];
 
-    getEditingHints(
-      lines
-        .map((l) => l.filter((n) => n != "PossibleChordPlace"))
-        .flatMap((l) => [...l, "Newline"])
-    );
+    setChords(nodes);
+    getEditingHints(nodes);
   }, [lines]);
 
   return (
@@ -102,6 +97,8 @@ export const ChordsEditor = ({ chords, setChords }: Props) => {
 
         lines[draggedI] = lines[draggedI].filter((_, j) => j != draggedJ);
 
+        // the entry was dragged further in this line
+        // the length of this line has changed
         if (draggedI == overI && overJ > draggedJ) {
           overJ--;
         }
