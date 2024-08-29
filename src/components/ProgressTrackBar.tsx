@@ -28,7 +28,7 @@ export const ProgressTrackBar = ({ currentStep }: Props) => {
               ? "tab tab-active cursor-pointer"
               : i <= currentStep
               ? "tab"
-              : "tab text-gray-100 cursor-default"
+              : "tab text-gray-400 cursor-default"
           }
         >
           {step.name}

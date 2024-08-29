@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { SongsContext } from "../components/context/songs-context";
 import { ChordsEditor, TextNode } from "../components/ChordsEditor";
 import { ProgressTrackBar } from "../components/ProgressTrackBar";
@@ -21,7 +21,11 @@ export const EditSongsRoute = () => {
         return (
           <Collapsible
             className="w-[90%]"
-            title={<div className="select-none">{name}</div>}
+            title={
+              <div className="select-none flex items-center justify-between">
+                {name}
+              </div>
+            }
           >
             <div className="touch-none overflow-x-hidden overflow-y-auto">
               <ChordsEditor

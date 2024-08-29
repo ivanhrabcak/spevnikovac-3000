@@ -19,15 +19,42 @@ type Props = {
 export const ChordsEditor = ({ chords, setChords }: Props) => {
   const [editingHits, setEditingHints] = useState<null | EditingHint[]>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [transposedBy, setTransposedBy] = useState(0);
 
   const [lines, setLines] = useState<(TextNode | "PossibleChordPlace")[][]>([]);
-  console.log(lines);
 
   const getEditingHints = async (chords: TextNode[]) => {
     const result = (await invoke("get_editing_hints", {
       nodes: chords,
     })) as EditingHint[];
     setEditingHints(result);
+  };
+
+  const convertToRustFormat = (
+    lines: (TextNode | "PossibleChordPlace")[][]
+  ) => {
+    return lines
+      .map((l) => l.filter((n) => n != "PossibleChordPlace"))
+      .flatMap((l) => [...l, "Newline"]) as TextNode[];
+  };
+
+  const transpose = async (modifier: number) => {
+    const nodes = convertToRustFormat(lines);
+    const result = (await invoke("transpose", {
+      nodes,
+      modifier,
+    })) as TextNode[];
+
+    const lineByLine: TextNode[][] = [[]];
+    result.forEach((node) => {
+      if (node != "Newline") {
+        lineByLine[lineByLine.length - 1].push(node);
+      } else {
+        lineByLine.push([]);
+      }
+    });
+
+    setLines(lineByLine);
   };
 
   useEffect(() => {
@@ -66,9 +93,7 @@ export const ChordsEditor = ({ chords, setChords }: Props) => {
       return;
     }
 
-    const nodes = lines
-      .map((l) => l.filter((n) => n != "PossibleChordPlace"))
-      .flatMap((l) => [...l, "Newline"]) as TextNode[];
+    const nodes = convertToRustFormat(lines);
 
     setChords(nodes);
     getEditingHints(nodes);
@@ -157,6 +182,29 @@ export const ChordsEditor = ({ chords, setChords }: Props) => {
       onDragStart={() => setIsDragging(true)}
     >
       <div className="w-[80vw] flex flex-col">
+        <div className="mr-16 flex flex-col items-center gap-1 text-center">
+          <div className="text-sm">Transpozícia: {transposedBy}</div>
+          <div className="flex items-center justify-around gap-2">
+            <button
+              className="btn btn-xs w-3"
+              onClick={() => {
+                transpose(1);
+                setTransposedBy(transposedBy + 1);
+              }}
+            >
+              +
+            </button>
+            <button
+              onClick={() => {
+                transpose(-1);
+                setTransposedBy(transposedBy - 1);
+              }}
+              className="btn btn-xs w-3"
+            >
+              -
+            </button>
+          </div>
+        </div>
         {lines.map((line, i) => (
           <div className="flex items-center touch-none">
             {line.map((node, j) => {

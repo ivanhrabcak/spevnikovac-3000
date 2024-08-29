@@ -1,24 +1,55 @@
 import { useContext, useEffect, useState } from "react";
 import { SongsContext } from "../components/context/songs-context";
 import { ProgressTrackBar } from "../components/ProgressTrackBar";
-import { desktopDir } from "@tauri-apps/api/path";
+import { desktopDir, join } from "@tauri-apps/api/path";
 import { save } from "@tauri-apps/api/dialog";
+import { invoke } from "@tauri-apps/api";
+import ConfettiExplosion from "react-confetti-explosion";
+import { useNavigate } from "react-router-dom";
 
 export const ExportRoute = () => {
-  const { songs } = useContext(SongsContext);
+  const { songs, setSongs } = useContext(SongsContext);
+  const navigate = useNavigate();
+
   const [savePath, setSavePath] = useState<string | null>(null);
+  const [isLoading, setLoading] = useState(false);
+  const [isDone, setIsDone] = useState(false);
 
   useEffect(() => {
     const getSavePath = async () => {
-      setSavePath(await desktopDir());
+      const desktopPath = await desktopDir();
+
+      setSavePath(await join(desktopPath, "songs.docx"));
     };
 
     if (savePath == null) {
       getSavePath();
     }
   }, []);
+
+  const startExport = async () => {
+    setLoading(true);
+    const mappedChords = Object.keys(songs).map((k) => {
+      const [artist, song_name] = k.split(" - ");
+      const text = songs[k];
+
+      return { artist, song_name, text };
+    });
+
+    const result = await invoke("write_docx", {
+      songs: mappedChords,
+      path: savePath,
+    });
+
+    setLoading(false);
+    setIsDone(true);
+
+    console.log(result);
+  };
+
   return (
-    <div className="flex flex-col gap-5 h-full items-center">
+    <div className="flex select-none flex-col gap-5 h-full items-center">
+      {isDone && <ConfettiExplosion duration={5000} />}
       <div className="justify-self-start">
         <ProgressTrackBar currentStep={2} />
       </div>
@@ -50,14 +81,30 @@ export const ExportRoute = () => {
         <button
           onClick={(e) => {
             e.preventDefault();
-            console.log("works!");
+            startExport();
           }}
           type="submit"
           className="btn btn-primary"
+          disabled={isDone}
         >
-          Uložiť
+          {isLoading && (
+            <span className="loading relative loading-spinner loading-md" />
+          )}
+          {!isLoading && "Uložiť"}
         </button>
       </form>
+
+      {isDone && (
+        <button
+          className="btn btn-warning mb-5"
+          onClick={() => {
+            setSongs({});
+            navigate("/");
+          }}
+        >
+          Od začiatku
+        </button>
+      )}
     </div>
   );
 };
