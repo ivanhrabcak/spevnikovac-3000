@@ -9,7 +9,7 @@ import { ProgressTrackBar } from "../components/ProgressTrackBar";
 
 type LyricsWithChords = { artist: string; song_name: string; text: TextNode[] };
 
-const supportedSources = ["ultimate-guitar.com"];
+const supportedSources = ["ultimate-guitar.com", "supermusic.cz"];
 
 export const AddSongsRoute = () => {
   const { isLoaded, songs, setSongs } = useContext(SongsContext);
@@ -26,8 +26,6 @@ export const AddSongsRoute = () => {
     setLoading(true);
 
     const result = (await invoke("fetch", { url })) as LyricsWithChords;
-
-    console.log(result);
 
     const newItem: Record<string, TextNode[]> = {};
     newItem[`${result.song_name} - ${result.artist}`] = result.text;
