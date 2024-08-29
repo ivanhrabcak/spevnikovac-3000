@@ -9,11 +9,14 @@ import { ProgressTrackBar } from "../components/ProgressTrackBar";
 
 type LyricsWithChords = { artist: string; song_name: string; text: TextNode[] };
 
+const supportedSources = ["ultimate-guitar.com"];
+
 export const AddSongsRoute = () => {
   const { isLoaded, songs, setSongs } = useContext(SongsContext);
 
   const [url, setUrl] = useState("");
   const [isLoading, setLoading] = useState(!isLoaded);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [parent] = useAutoAnimate();
 
@@ -39,25 +42,41 @@ export const AddSongsRoute = () => {
   return (
     <div className="flex flex-col select-none h-full items-center gap-4">
       <ProgressTrackBar currentStep={0} />
-      <form
-        className="flex items-center w-[50%]"
-        onSubmit={(e) => {
-          e.preventDefault();
-          addSong();
-        }}
-      >
-        <input
-          className="input input-bordered m-3 w-full"
-          onChange={(e) => setUrl(e.currentTarget.value)}
-          placeholder="URL..."
-        />
-        <button className="btn w-20" type="submit">
-          {isLoading && (
-            <span className="loading relative loading-spinner loading-md" />
-          )}
-          {!isLoading && "Pridaj"}
-        </button>
-      </form>
+      <div className="flex flex-col w-full items-center">
+        {errorMessage != "" && (
+          <div className="text-sm text-red-500">{errorMessage}</div>
+        )}
+        <form
+          className="flex items-center w-[50%]"
+          onSubmit={(e) => {
+            e.preventDefault();
+            addSong();
+          }}
+        >
+          <input
+            className="input input-bordered m-3 w-full"
+            onChange={(e) => setUrl(e.currentTarget.value)}
+            placeholder="URL..."
+          />
+          <button
+            onClick={(e) => {
+              if (supportedSources.filter((k) => url.includes(k)).length == 0) {
+                e.preventDefault();
+                setErrorMessage("Táto stránka zatiaľ nie je podporovaná!");
+              } else {
+                setErrorMessage("");
+              }
+            }}
+            className="btn w-20"
+            type="submit"
+          >
+            {isLoading && (
+              <span className="loading relative loading-spinner loading-md" />
+            )}
+            {!isLoading && "Pridaj"}
+          </button>
+        </form>
+      </div>
 
       <div className="flex items-center w-full text-center flex-col">
         <div className="text-xl font-semibold mb-5">
