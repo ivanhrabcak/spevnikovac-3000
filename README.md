@@ -27,5 +27,9 @@ git clone --recursive https://github.com/ivanhrabcak/spevnikovac-3000
 ```
 
 ```shell
+yarn
+```
+
+```shell
 yarn tauri dev
 ```
