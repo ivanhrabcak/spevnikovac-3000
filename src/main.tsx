@@ -13,7 +13,7 @@ const router = createBrowserRouter([
     element: <AddSongsRoute />,
   },
   {
-    path: "/choose",
+    path: "/edit",
     element: <EditSongsRoute />,
   },
   {

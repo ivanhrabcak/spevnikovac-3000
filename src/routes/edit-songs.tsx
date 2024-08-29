@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { SongsContext } from "../components/context/songs-context";
 import { ChordsEditor, TextNode } from "../components/ChordsEditor";
 import { ProgressTrackBar } from "../components/ProgressTrackBar";

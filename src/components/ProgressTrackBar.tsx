@@ -2,14 +2,13 @@ import { useNavigate } from "react-router-dom";
 
 const steps = [
   { name: "Pridaj pesničky", path: "/" },
-  { name: "Uprav", path: "/choose" },
-  { name: "Exportuj", path: "/" },
+  { name: "Uprav", path: "/edit" },
+  { name: "Exportuj", path: "/export" },
 ];
 
 type Props = {
   currentStep: number;
 };
-
 export const ProgressTrackBar = ({ currentStep }: Props) => {
   const navigate = useNavigate();
 

@@ -102,7 +102,7 @@ export const AddSongsRoute = () => {
       <button
         onClick={() => {
           if (Object.keys(songs).length != 0) {
-            navigate("/choose");
+            navigate("/edit");
           }
         }}
         className="btn btn-primary fixed bottom-5"
