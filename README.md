@@ -1,4 +1,5 @@
 # Spevníkovač-3000
+[Stiahni tu](https://github.com/ivanhrabcak/spevnikovac-3000/releases) 
 
 <img width="802" alt="image" src="https://github.com/user-attachments/assets/33eb3f7d-1edf-47de-b90a-bee57923192d">
 
