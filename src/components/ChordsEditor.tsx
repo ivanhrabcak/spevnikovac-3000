@@ -14,12 +14,18 @@ export type EditingHint = "PossibleChordPlace" | Node;
 type Props = {
   chords: TextNode[];
   setChords: (chords: TextNode[]) => void;
+  transposedBy: number;
+  setTransposedBy: (n: number) => void;
 };
 
-export const ChordsEditor = ({ chords, setChords }: Props) => {
+export const ChordsEditor = ({
+  chords,
+  setChords,
+  transposedBy,
+  setTransposedBy,
+}: Props) => {
   const [editingHits, setEditingHints] = useState<null | EditingHint[]>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [transposedBy, setTransposedBy] = useState(0);
 
   const [lines, setLines] = useState<(TextNode | "PossibleChordPlace")[][]>([]);
 
@@ -182,7 +188,7 @@ export const ChordsEditor = ({ chords, setChords }: Props) => {
       onDragStart={() => setIsDragging(true)}
     >
       <div className="w-[80vw] flex flex-col">
-        <div className="mr-16 flex flex-col items-center gap-1 text-center">
+        <div className="mr-16 flex flex-col items-center mb-2 justify-center gap-1 text-center">
           <div className="text-sm">Transpozícia: {transposedBy}</div>
           <div className="flex items-center justify-around gap-2">
             <button

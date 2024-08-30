@@ -2,7 +2,8 @@ import { createContext, Dispatch, ReactNode, useState } from "react";
 import { TextNode } from "../ChordsEditor";
 import React from "react";
 
-type Songs = Record<string, TextNode[]>;
+export type Song = { nodes: TextNode[]; transposedBy: number };
+export type Songs = Record<string, Song>;
 export const SongsContext = createContext<{
   isLoaded: boolean;
   setSongs: Dispatch<React.SetStateAction<Songs>>;

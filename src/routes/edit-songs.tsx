@@ -30,10 +30,18 @@ export const EditSongsRoute = () => {
             <div className="touch-none overflow-x-hidden overflow-y-auto">
               <ChordsEditor
                 setChords={(ch: TextNode[]) => {
-                  songs[name] = ch;
+                  songs[name] = {
+                    nodes: ch,
+                    transposedBy: songs[name].transposedBy,
+                  };
                   setSongs({ ...songs });
                 }}
-                chords={songs[name]}
+                setTransposedBy={(n: number) => {
+                  songs[name] = { ...songs[name], transposedBy: n };
+                  setSongs({ ...songs });
+                }}
+                transposedBy={songs[name].transposedBy}
+                chords={songs[name].nodes}
               />
             </div>
           </Collapsible>

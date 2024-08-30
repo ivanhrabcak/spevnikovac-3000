@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api";
 import { useContext, useState } from "react";
 import { TextNode } from "../components/ChordsEditor";
 import Cross from "../assets/x.svg?react";
-import { SongsContext } from "../components/context/songs-context";
+import { Song, SongsContext } from "../components/context/songs-context";
 import { useNavigate } from "react-router-dom";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { ProgressTrackBar } from "../components/ProgressTrackBar";
@@ -27,8 +27,11 @@ export const AddSongsRoute = () => {
 
     const result = (await invoke("fetch", { url })) as LyricsWithChords;
 
-    const newItem: Record<string, TextNode[]> = {};
-    newItem[`${result.song_name} - ${result.artist}`] = result.text;
+    const newItem: Record<string, Song> = {};
+    newItem[`${result.song_name} - ${result.artist}`] = {
+      nodes: result.text,
+      transposedBy: 0,
+    };
 
     setLoading(false);
     setSongs({
