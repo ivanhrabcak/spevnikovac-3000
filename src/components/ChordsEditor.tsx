@@ -27,8 +27,6 @@ export const ChordsEditor = ({
   const [editingHits, setEditingHints] = useState<null | EditingHint[]>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  const [lines, setLines] = useState<(TextNode | "PossibleChordPlace")[][]>([]);
-
   const getEditingHints = async (chords: TextNode[]) => {
     const result = (await invoke("get_editing_hints", {
       nodes: chords,
@@ -36,74 +34,48 @@ export const ChordsEditor = ({
     setEditingHints(result);
   };
 
-  const convertToRustFormat = (
-    lines: (TextNode | "PossibleChordPlace")[][]
-  ) => {
+  const convertToRustFormat = (lines: (Node | "PossibleChordPlace")[]) => {
     return lines
-      .map((l) => l.filter((n) => n != "PossibleChordPlace"))
-      .flatMap((l) => [...l, "Newline"]) as TextNode[];
+      .filter((n) => n != "PossibleChordPlace")
+      .map((n) => (n as Node).Node);
   };
 
   const transpose = async (modifier: number) => {
-    const nodes = convertToRustFormat(lines);
+    const nodes = convertToRustFormat(editingHits!);
     const result = (await invoke("transpose", {
       nodes,
       modifier,
     })) as TextNode[];
 
-    const lineByLine: TextNode[][] = [[]];
-    result.forEach((node) => {
-      if (node != "Newline") {
-        lineByLine[lineByLine.length - 1].push(node);
-      } else {
-        lineByLine.push([]);
-      }
-    });
-
-    setLines(lineByLine);
+    getEditingHints(result);
   };
 
   useEffect(() => {
-    if (lines.length == 0 && editingHits != null) {
-      const l = editingHits.reduce(
-        (acc, node) => {
-          if (node == "PossibleChordPlace") {
-            acc[acc.length - 1].push(node);
-            return acc;
-          }
+    // if (lines.length == 0 && editingHits != null) {
+    //   const l = editingHits.reduce(
+    //     (acc, node) => {
+    //       if (node == "PossibleChordPlace") {
+    //         acc[acc.length - 1].push(node);
+    //         return acc;
+    //       }
 
-          const value = (node as Node).Node;
-          if (value != "Newline") {
-            acc[acc.length - 1].push((node as Node).Node);
-          } else {
-            acc.push([]);
-          }
+    //       const value = (node as Node).Node;
+    //       if (value != "Newline") {
+    //         acc[acc.length - 1].push((node as Node).Node);
+    //       } else {
+    //         acc.push([]);
+    //       }
 
-          return acc;
-        },
-        [[]] as (TextNode | "PossibleChordPlace")[][]
-      );
+    //       return acc;
+    //     },
+    //     [[]] as (TextNode | "PossibleChordPlace")[][]
+    //   );
 
-      setLines(l);
-    }
-
-    if (editingHits != null) {
-      return;
-    }
+    //   setLines(l);
+    // }
 
     getEditingHints(chords);
-  }, [editingHits, setEditingHints, lines]);
-
-  useEffect(() => {
-    if (lines.length == 0) {
-      return;
-    }
-
-    const nodes = convertToRustFormat(lines);
-
-    setChords(nodes);
-    getEditingHints(nodes);
-  }, [lines]);
+  }, [chords]);
 
   return (
     <DndContext
@@ -123,6 +95,26 @@ export const ChordsEditor = ({
 
         const draggedI = +(partsDragged ?? [0])[0];
         const draggedJ = +(partsDragged ?? [1])[1];
+
+        const lines = editingHits!
+          .map((n) => {
+            if (n != "PossibleChordPlace") {
+              return (n as Node).Node;
+            }
+            return n;
+          })
+          .reduce(
+            (acc, n) => {
+              if (n == "Newline") {
+                acc.push([]);
+              } else {
+                acc[acc.length - 1].push(n);
+              }
+
+              return acc;
+            },
+            [[]] as ("PossibleChordPlace" | TextNode)[][]
+          );
 
         const node = lines[draggedI][draggedJ];
 
@@ -183,7 +175,27 @@ export const ChordsEditor = ({
         });
 
         setIsDragging(false);
-        setLines([...lines]);
+        setChords(
+          convertToRustFormat(
+            lines
+              .map((l) =>
+                l.map((n) => {
+                  if (n != "PossibleChordPlace") {
+                    return { Node: n };
+                  } else {
+                    return n;
+                  }
+                })
+              )
+              .flatMap((k, i, arr) => {
+                if (i != arr.length) {
+                  return [...k, { Node: "Newline" }];
+                } else {
+                  return k;
+                }
+              })
+          )
+        );
       }}
       onDragStart={() => setIsDragging(true)}
     >
@@ -211,28 +223,48 @@ export const ChordsEditor = ({
             </button>
           </div>
         </div>
-        {lines.map((line, i) => (
-          <div className="flex items-center touch-none">
-            {line.map((node, j) => {
-              const key = `${i}-${j}`;
-              if ((node as Chord).Chord != undefined) {
-                return (
-                  <Chord chord={(node as Chord).Chord} id={key} key={key} />
-                );
-              } else if ((node as Label).Label != undefined) {
-                return <b key={i + j}>{(node as Label).Label}</b>;
-              } else if ((node as Text).Text != undefined) {
-                return (
-                  <span className="whitespace-pre" key={i + j}>
-                    {(node as Text).Text}
-                  </span>
-                );
-              } else if (node == "PossibleChordPlace") {
-                return <>{isDragging && <PossibleChordPlace id={key} />}</>;
+        {editingHits != null &&
+          editingHits
+            .map((n) => {
+              if (n != "PossibleChordPlace") {
+                return (n as Node).Node;
               }
-            })}
-          </div>
-        ))}
+              return n;
+            })
+            .reduce(
+              (acc, n) => {
+                if (n == "Newline") {
+                  acc.push([]);
+                } else {
+                  acc[acc.length - 1].push(n);
+                }
+
+                return acc;
+              },
+              [[]] as ("PossibleChordPlace" | TextNode)[][]
+            )
+            .map((line, i) => (
+              <div className="flex items-center touch-none">
+                {line.map((node, j) => {
+                  const key = `${i}-${j}`;
+                  if ((node as Chord).Chord != undefined) {
+                    return (
+                      <Chord chord={(node as Chord).Chord} id={key} key={key} />
+                    );
+                  } else if ((node as Label).Label != undefined) {
+                    return <b key={i + j}>{(node as Label).Label}</b>;
+                  } else if ((node as Text).Text != undefined) {
+                    return (
+                      <span className="whitespace-pre" key={i + j}>
+                        {(node as Text).Text}
+                      </span>
+                    );
+                  } else if (node == "PossibleChordPlace") {
+                    return <>{isDragging && <PossibleChordPlace id={key} />}</>;
+                  }
+                })}
+              </div>
+            ))}
       </div>
     </DndContext>
   );

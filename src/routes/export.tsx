@@ -33,8 +33,10 @@ export const ExportRoute = () => {
       const [artist, song_name] = k.split(" - ");
       const text = songs[k];
 
-      return { artist, song_name, text };
+      return { artist, song_name, text: text.nodes };
     });
+
+    console.log(mappedChords);
 
     const result = await invoke("write_docx", {
       songs: mappedChords,
