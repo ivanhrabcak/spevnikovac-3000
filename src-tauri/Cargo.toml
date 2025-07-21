@@ -14,7 +14,7 @@ tauri-build = { version = "1", features = [] }
 tauri = { version = "1", features = [ "path-all", "dialog-save", "shell-open"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-spevnik = { path = "spevnik" }
+spevnik = { git = "https://github.com/ivanhrabcak/spevnikovac-3000-backend" }
 
 
 [features]
