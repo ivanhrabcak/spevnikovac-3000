@@ -1,10 +1,10 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { invoke } from "@tauri-apps/api";
 import { useContext, useState } from "react";
-import { TextNode } from "../components/ChordsEditor";
-import Cross from "../assets/x.svg?react";
-import { Song, SongsContext } from "../components/context/songs-context";
 import { useNavigate } from "react-router-dom";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
+import Cross from "../assets/x.svg?react";
+import { TextNode } from "../components/ChordsEditor";
+import { Song, SongsContext } from "../components/context/songs-context";
 import { ProgressTrackBar } from "../components/ProgressTrackBar";
 
 type LyricsWithChords = { artist: string; song_name: string; text: TextNode[] };
