@@ -657,9 +657,10 @@ dependencies = [
 [[package]]
 name = "docx"
 version = "1.1.2"
-source = "git+https://github.com/ivanhrabcak/spevnikovac-3000-backend#fee440350645b3a7a2f35be28a2d420def925ff4"
+source = "git+https://github.com/ivanhrabcak/docx-rs#6b75730236d409dd096207e844df8582c58b2e78"
 dependencies = [
  "derive_more",
+ "jetscii",
  "log",
  "strong-xml",
  "zip",
@@ -1300,15 +1301,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
-name = "html-escape"
-version = "0.2.13"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6d1ad449764d627e22bfd7cd5e8868264fc9236e07c752972b4080cd351cb476"
-dependencies = [
- "utf8-width",
-]
-
-[[package]]
 name = "html5ever"
 version = "0.26.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1759,9 +1751,9 @@ dependencies = [
 
 [[package]]
 name = "jetscii"
-version = "0.4.4"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f25cca2463cb19dbb1061eb3bd38a8b5e4ce1cc5a5a9fc0e02de486d92b9b05"
+checksum = "47f142fe24a9c9944451e8349de0a56af5f3e7226dc46f3ed4d4ecc0b85af75e"
 
 [[package]]
 name = "jni"
@@ -3286,11 +3278,11 @@ dependencies = [
 [[package]]
 name = "spevnik"
 version = "0.1.0"
-source = "git+https://github.com/ivanhrabcak/spevnikovac-3000-backend#fee440350645b3a7a2f35be28a2d420def925ff4"
+source = "git+https://github.com/ivanhrabcak/spevnikovac-3000-backend#4026e7cd95ea88d3137563129019114f1843624a"
 dependencies = [
  "anyhow",
  "docx",
- "html-escape",
+ "ego-tree",
  "itertools",
  "nom",
  "reqwest",
@@ -3355,9 +3347,9 @@ dependencies = [
 
 [[package]]
 name = "strong-xml"
-version = "0.5.0"
+version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "98c54661f58cdd722d87bd1836581aa1f9db078eb83374b2297cf363397e0e7f"
+checksum = "1d19fb3a618e2f1039e32317c9f525e6d45c55af704ec7c429aa74412419bebf"
 dependencies = [
  "jetscii",
  "lazy_static",
@@ -3369,9 +3361,9 @@ dependencies = [
 
 [[package]]
 name = "strong-xml-derive"
-version = "0.5.0"
+version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7360ad7fc699b2753db380ab3d08ec6b952486e74c631be793a0b5542e55fa6f"
+checksum = "92c781f499321613b112be5d9338189ef1ed19689a01edd23d923ea57ad5c7e1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -4157,12 +4149,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "09cc8ee72d2a9becf2f2febe0205bbed8fc6615b7cb429ad062dc7b7ddd036a9"
 
 [[package]]
-name = "utf8-width"
-version = "0.1.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "86bd8d4e895da8537e5315b8254664e6b769c4ff3db18321b297a1e7004392e3"
-
-[[package]]
 name = "utf8_iter"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4463,7 +4449,7 @@ version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.48.0",
 ]
 
 [[package]]

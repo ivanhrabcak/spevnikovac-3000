@@ -24,20 +24,26 @@ export const AddSongsRoute = () => {
 
   const addSong = async () => {
     setLoading(true);
+    setErrorMessage("");
 
-    const result = (await invoke("fetch", { url })) as LyricsWithChords;
+    try {
+      const result = (await invoke("fetch", { url })) as LyricsWithChords;
 
-    const newItem: Record<string, Song> = {};
-    newItem[`${result.song_name} - ${result.artist}`] = {
-      nodes: result.text,
-      transposedBy: 0,
-    };
+      const newItem: Record<string, Song> = {};
+      newItem[`${result.song_name} - ${result.artist}`] = {
+        nodes: result.text,
+        transposedBy: 0,
+      };
 
-    setLoading(false);
-    setSongs({
-      ...songs,
-      ...newItem,
-    });
+      setSongs({
+        ...songs,
+        ...newItem,
+      });
+    } catch (e) {
+      setErrorMessage(String(e));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
