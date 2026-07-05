@@ -36,7 +36,11 @@ jobs:
       - name: install frontend dependencies
         run: yarn install # change this to npm, pnpm or bun depending on which one you use.
 
-      - uses: tauri-apps/tauri-action@v1
+      # NOTE: pinned to v0, not v1 - v1 targets Tauri v2's config schema
+      # (top-level `identifier`), while this app is still on Tauri v1, where
+      # the bundle identifier lives under `tauri.bundle.identifier`. Using v1
+      # here fails immediately with "base config has no bundle identifier."
+      - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
