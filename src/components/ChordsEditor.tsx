@@ -50,30 +50,8 @@ export const ChordsEditor = ({
     getEditingHints(result);
   };
 
+  
   useEffect(() => {
-    // if (lines.length == 0 && editingHits != null) {
-    //   const l = editingHits.reduce(
-    //     (acc, node) => {
-    //       if (node == "PossibleChordPlace") {
-    //         acc[acc.length - 1].push(node);
-    //         return acc;
-    //       }
-
-    //       const value = (node as Node).Node;
-    //       if (value != "Newline") {
-    //         acc[acc.length - 1].push((node as Node).Node);
-    //       } else {
-    //         acc.push([]);
-    //       }
-
-    //       return acc;
-    //     },
-    //     [[]] as (TextNode | "PossibleChordPlace")[][]
-    //   );
-
-    //   setLines(l);
-    // }
-
     getEditingHints(chords);
   }, [chords]);
 
