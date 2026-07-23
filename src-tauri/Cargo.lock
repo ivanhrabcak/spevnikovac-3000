@@ -3501,7 +3501,7 @@ dependencies = [
 [[package]]
 name = "spevnik"
 version = "0.1.0"
-source = "git+https://github.com/ivanhrabcak/spevnikovac-3000-backend#023379843f14308648c596d2ac5b7e7c023428a9"
+source = "git+https://github.com/ivanhrabcak/spevnikovac-3000-backend#7763f25840a9d00ea3f5138f409962f7c226cd18"
 dependencies = [
  "anyhow",
  "docx",
