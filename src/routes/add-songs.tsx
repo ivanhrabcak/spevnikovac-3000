@@ -1,5 +1,5 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cross from "../assets/x.svg?react";

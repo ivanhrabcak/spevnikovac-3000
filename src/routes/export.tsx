@@ -2,8 +2,8 @@ import { useContext, useEffect, useState } from "react";
 import { SongsContext } from "../components/context/songs-context";
 import { ProgressTrackBar } from "../components/ProgressTrackBar";
 import { desktopDir, join } from "@tauri-apps/api/path";
-import { save } from "@tauri-apps/api/dialog";
-import { invoke } from "@tauri-apps/api";
+import { save } from "@tauri-apps/plugin-dialog";
+import { invoke } from "@tauri-apps/api/core";
 import ConfettiExplosion from "react-confetti-explosion";
 import { useNavigate } from "react-router-dom";
 
