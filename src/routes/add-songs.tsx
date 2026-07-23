@@ -6,6 +6,7 @@ import Cross from "../assets/x.svg?react";
 import { TextNode } from "../components/ChordsEditor";
 import { Song, SongsContext } from "../components/context/songs-context";
 import { ProgressTrackBar } from "../components/ProgressTrackBar";
+import { SONGS_LIST } from "../songs-list";
 
 type LyricsWithChords = { artist: string; song_name: string; text: TextNode[] };
 
@@ -21,6 +22,39 @@ export const AddSongsRoute = () => {
   const [parent] = useAutoAnimate();
 
   const navigate = useNavigate();
+
+  const [queuedUrls] = useState<string[]>(SONGS_LIST);
+  const [batchStatus, setBatchStatus] = useState<
+    Record<string, "pending" | "success" | "error">
+  >({});
+  const [isBatchRunning, setBatchRunning] = useState(false);
+
+  const fetchAll = async () => {
+    setBatchRunning(true);
+    const initialStatus: Record<string, "pending" | "success" | "error"> = {};
+    queuedUrls.forEach((u) => (initialStatus[u] = "pending"));
+    setBatchStatus(initialStatus);
+
+    const collected: Record<string, Song> = {};
+
+    for (const queuedUrl of queuedUrls) {
+      try {
+        const result = (await invoke("fetch", {
+          url: queuedUrl,
+        })) as LyricsWithChords;
+        collected[`${result.song_name} - ${result.artist}`] = {
+          nodes: result.text,
+          transposedBy: 0,
+        };
+        setBatchStatus((prev) => ({ ...prev, [queuedUrl]: "success" }));
+        setSongs((prevSongs) => ({ ...prevSongs, ...collected }));
+      } catch (e) {
+        setBatchStatus((prev) => ({ ...prev, [queuedUrl]: "error" }));
+      }
+    }
+
+    setBatchRunning(false);
+  };
 
   const addSong = async () => {
     setLoading(true);
@@ -83,6 +117,31 @@ export const AddSongsRoute = () => {
             {!isLoading && "Pridaj"}
           </button>
         </form>
+        <div className="flex flex-col items-center w-[50%] gap-2 mt-4">
+          <button
+            className="btn"
+            disabled={isBatchRunning}
+            onClick={fetchAll}
+          >
+            {isBatchRunning
+              ? "Načítavam..."
+              : `Načítať všetky (${queuedUrls.length})`}
+          </button>
+          {Object.keys(batchStatus).length > 0 && (
+            <div className="w-full max-h-48 overflow-y-auto text-sm">
+              {queuedUrls.map((u) => (
+                <div key={u} className="flex justify-between gap-2">
+                  <span className="truncate">{u}</span>
+                  <span>
+                    {batchStatus[u] === "pending" && "..."}
+                    {batchStatus[u] === "success" && "✓"}
+                    {batchStatus[u] === "error" && "✗"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="flex items-center w-full text-center flex-col">
