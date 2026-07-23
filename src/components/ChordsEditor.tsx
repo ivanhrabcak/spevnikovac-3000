@@ -178,26 +178,36 @@ export const ChordsEditor = ({
       onDragStart={() => setIsDragging(true)}
     >
       <div className="w-[80vw] flex flex-col">
-        <div className="mr-16 flex flex-col items-center mb-2 justify-center gap-1 text-center">
+        <div className="mr-16 flex flex-col items-center mb-2 justify-center gap-2 text-center">
           <div className="text-sm">Transpozícia: {transposedBy}</div>
           <div className="flex items-center justify-around gap-2">
             <button
-              className="btn btn-xs w-3"
+              onClick={() => {
+                transpose(-1);
+                setTransposedBy(transposedBy - 1);
+              }}
+              className="btn btn-sm"
+            >
+              -
+            </button>
+            <button
+              className="btn btn-sm btn-ghost"
+              disabled={transposedBy == 0}
+              onClick={() => {
+                transpose(-transposedBy);
+                setTransposedBy(0);
+              }}
+            >
+              Reset
+            </button>
+            <button
+              className="btn btn-sm"
               onClick={() => {
                 transpose(1);
                 setTransposedBy(transposedBy + 1);
               }}
             >
               +
-            </button>
-            <button
-              onClick={() => {
-                transpose(-1);
-                setTransposedBy(transposedBy - 1);
-              }}
-              className="btn btn-xs w-3"
-            >
-              -
             </button>
           </div>
         </div>

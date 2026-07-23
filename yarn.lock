@@ -735,6 +735,13 @@
   dependencies:
     "@tauri-apps/api" "^2.11.0"
 
+"@tauri-apps/plugin-store@^2.4.4":
+  version "2.4.4"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-store/-/plugin-store-2.4.4.tgz#af8b530428a585ac1f1187acf4d7987474cda209"
+  integrity sha512-oxSMaj/QpVfJcBMYX5aOQV94fWvga0MwQMfD6TLlbK2dh+ShPWAzefd8HWXhvOKjPRJdGVAkW7ZGO76JzzjaDA==
+  dependencies:
+    "@tauri-apps/api" "^2.11.0"
+
 "@types/babel__core@^7.20.5":
   version "7.20.5"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.20.5.tgz#3df15f27ba85319caa07ba08d0721889bb39c017"

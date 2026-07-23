@@ -8,6 +8,7 @@
   "permissions": [
     "core:default",
     "dialog:default",
+    "store:default",
     "allow-fetch",
     "allow-get-editing-hints",
     "allow-write-docx",

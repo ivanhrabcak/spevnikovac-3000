@@ -1,199 +1,215 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { invoke } from "@tauri-apps/api/core";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cross from "../assets/x.svg?react";
 import { TextNode } from "../components/ChordsEditor";
-import { Song, SongsContext } from "../components/context/songs-context";
+import { Song, SongsContext, makeSongKey } from "../components/context/songs-context";
 import { ProgressTrackBar } from "../components/ProgressTrackBar";
-import { SONGS_LIST } from "../songs-list";
 
 type LyricsWithChords = { artist: string; song_name: string; text: TextNode[] };
 
 const supportedSources = ["ultimate-guitar.com", "supermusic.cz"];
 
-export const AddSongsRoute = () => {
-  const { isLoaded, songs, setSongs } = useContext(SongsContext);
+type Row =
+  | { kind: "song"; key: string; label: string }
+  | { kind: "pending" | "error"; key: string; label: string };
 
-  const [url, setUrl] = useState("");
-  const [isLoading, setLoading] = useState(!isLoaded);
-  const [errorMessage, setErrorMessage] = useState("");
+export const AddSongsRoute = () => {
+  const { isLoaded, songs, addSongs, deleteSong, deleteAllSongs } =
+    useContext(SongsContext);
+
+  const [urlsText, setUrlsText] = useState("");
+  const [batchStatus, setBatchStatus] = useState<
+    Record<string, "pending" | "error">
+  >({});
+  const [isBatchRunning, setBatchRunning] = useState(false);
 
   const [parent] = useAutoAnimate();
 
   const navigate = useNavigate();
+  const deleteDialogRef = useRef<HTMLDialogElement>(null);
 
-  const [queuedUrls] = useState<string[]>(SONGS_LIST);
-  const [batchStatus, setBatchStatus] = useState<
-    Record<string, "pending" | "success" | "error">
-  >({});
-  const [isBatchRunning, setBatchRunning] = useState(false);
+  const submitUrls = async () => {
+    const urls = urlsText
+      .split("\n")
+      .map((u) => u.trim())
+      .filter((u) => u != "");
 
-  const fetchAll = async () => {
+    if (urls.length == 0) return;
+
     setBatchRunning(true);
-    const initialStatus: Record<string, "pending" | "success" | "error"> = {};
-    queuedUrls.forEach((u) => (initialStatus[u] = "pending"));
-    setBatchStatus(initialStatus);
+    setUrlsText("");
+    setBatchStatus((prev) => {
+      const next = { ...prev };
+      urls.forEach((u) => (next[u] = "pending"));
+      return next;
+    });
 
-    const collected: Record<string, Song> = {};
+    for (const url of urls) {
+      if (supportedSources.filter((k) => url.includes(k)).length == 0) {
+        setBatchStatus((prev) => ({ ...prev, [url]: "error" }));
+        continue;
+      }
 
-    for (const queuedUrl of queuedUrls) {
       try {
-        const result = (await invoke("fetch", {
-          url: queuedUrl,
-        })) as LyricsWithChords;
-        collected[`${result.song_name} - ${result.artist}`] = {
+        const result = (await invoke("fetch", { url })) as LyricsWithChords;
+
+        const newItem: Record<string, Song> = {};
+        newItem[makeSongKey(result.artist, result.song_name)] = {
           nodes: result.text,
           transposedBy: 0,
         };
-        setBatchStatus((prev) => ({ ...prev, [queuedUrl]: "success" }));
-        setSongs((prevSongs) => ({ ...prevSongs, ...collected }));
+
+        addSongs(newItem);
+        setBatchStatus((prev) => {
+          const next = { ...prev };
+          delete next[url];
+          return next;
+        });
       } catch (e) {
-        setBatchStatus((prev) => ({ ...prev, [queuedUrl]: "error" }));
+        setBatchStatus((prev) => ({ ...prev, [url]: "error" }));
       }
     }
 
     setBatchRunning(false);
   };
 
-  const addSong = async () => {
-    setLoading(true);
-    setErrorMessage("");
-
-    try {
-      const result = (await invoke("fetch", { url })) as LyricsWithChords;
-
-      const newItem: Record<string, Song> = {};
-      newItem[`${result.song_name} - ${result.artist}`] = {
-        nodes: result.text,
-        transposedBy: 0,
-      };
-
-      setSongs({
-        ...songs,
-        ...newItem,
-      });
-    } catch (e) {
-      setErrorMessage(String(e));
-    } finally {
-      setLoading(false);
-    }
+  const dismissBatchEntry = (url: string) => {
+    setBatchStatus((prev) => {
+      const next = { ...prev };
+      delete next[url];
+      return next;
+    });
   };
+
+  const confirmDeleteAll = () => {
+    deleteAllSongs();
+    setBatchStatus({});
+    deleteDialogRef.current?.close();
+  };
+
+  const rows: Row[] = [
+    ...Object.keys(songs)
+      .sort()
+      .map((name): Row => ({ kind: "song", key: name, label: name })),
+    ...Object.keys(batchStatus).map(
+      (url): Row => ({ kind: batchStatus[url], key: url, label: url })
+    ),
+  ];
 
   return (
     <div className="flex flex-col select-none h-full items-center gap-4">
       <ProgressTrackBar currentStep={0} />
-      <div className="flex flex-col w-full items-center">
-        {errorMessage != "" && (
-          <div className="text-sm text-red-500">{errorMessage}</div>
-        )}
-        <form
-          className="flex items-center w-[50%]"
-          onSubmit={(e) => {
-            e.preventDefault();
-            addSong();
-          }}
-        >
-          <input
-            className="input input-bordered m-3 w-full"
-            onChange={(e) => setUrl(e.currentTarget.value)}
-            placeholder="URL..."
-          />
+      {!isLoaded && <h1>Načítavam...</h1>}
+      {isLoaded && (
+        <>
+          <div className="flex flex-col w-full items-center">
+            <div className="flex items-center w-[50%] gap-2">
+              <textarea
+                className="textarea textarea-bordered m-3 w-full"
+                rows={5}
+                placeholder={"URL adresa pesničky (jedna na riadok)..."}
+                value={urlsText}
+                onChange={(e) => setUrlsText(e.currentTarget.value)}
+              />
+              <button
+                className="btn w-32"
+                disabled={isBatchRunning || urlsText.trim() == ""}
+                onClick={submitUrls}
+              >
+                {isBatchRunning && (
+                  <span className="loading relative loading-spinner loading-md" />
+                )}
+                {!isBatchRunning && "Pridaj"}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center w-full text-center flex-col">
+            <div className="text-xl font-semibold mb-5">
+              Zoznam pridaných pesničiek:
+            </div>
+            <div ref={parent} className="h-full w-full">
+              {rows.length == 0 && <div>Žiadne pridané pesničky!</div>}
+              {rows.length != 0 && (
+                <div className="w-full flex flex-col items-center">
+                  {rows.map((row, i, arr) => (
+                    <div
+                      key={row.key}
+                      className="flex flex-col w-full items-center"
+                    >
+                      <div className="flex justify-between items-center gap-2 w-[60%]">
+                        <div className="truncate">{row.label}</div>
+                        {row.kind === "song" && (
+                          <Cross
+                            onClick={() => deleteSong(row.key)}
+                            className="remove-icon shrink-0"
+                          />
+                        )}
+                        {row.kind === "pending" && (
+                          <span className="loading loading-spinner loading-sm shrink-0" />
+                        )}
+                        {row.kind === "error" && (
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-red-500">✗</span>
+                            <Cross
+                              onClick={() => dismissBatchEntry(row.key)}
+                              className="remove-icon"
+                            />
+                          </div>
+                        )}
+                      </div>
+                      {i != arr.length - 1 && (
+                        <div className="divider self-center w-[80%]" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          {rows.length != 0 && (
+            <button
+              className="btn btn-outline btn-error fixed bottom-5 left-5"
+              onClick={() => deleteDialogRef.current?.showModal()}
+            >
+              Zmazať všetky
+            </button>
+          )}
           <button
-            onClick={(e) => {
-              if (supportedSources.filter((k) => url.includes(k)).length == 0) {
-                e.preventDefault();
-                setErrorMessage("Táto stránka zatiaľ nie je podporovaná!");
-              } else {
-                setErrorMessage("");
+            onClick={() => {
+              if (Object.keys(songs).length != 0) {
+                navigate("/edit");
               }
             }}
-            className="btn w-20"
-            type="submit"
+            className="btn btn-primary fixed bottom-5 right-5"
           >
-            {isLoading && (
-              <span className="loading relative loading-spinner loading-md" />
-            )}
-            {!isLoading && "Pridaj"}
+            Ďalej
           </button>
-        </form>
-        <div className="flex flex-col items-center w-[50%] gap-2 mt-4">
-          <button
-            className="btn"
-            disabled={isBatchRunning}
-            onClick={fetchAll}
-          >
-            {isBatchRunning
-              ? "Načítavam..."
-              : `Načítať všetky (${queuedUrls.length})`}
-          </button>
-          {Object.keys(batchStatus).length > 0 && (
-            <div className="w-full max-h-48 overflow-y-auto text-sm">
-              {queuedUrls.map((u) => (
-                <div key={u} className="flex justify-between gap-2">
-                  <span className="truncate">{u}</span>
-                  <span>
-                    {batchStatus[u] === "pending" && "..."}
-                    {batchStatus[u] === "success" && "✓"}
-                    {batchStatus[u] === "error" && "✗"}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
 
-      <div className="flex items-center w-full text-center flex-col">
-        <div className="text-xl font-semibold mb-5">
-          Zoznam pridaných pesničiek:
-        </div>
-        <div ref={parent} className="h-full w-full">
-          {Object.keys(songs).length == 0 && (
-            <div>Žiadne pridané pesničky!</div>
-          )}
-          {Object.keys(songs).length != 0 && (
-            <div className="w-full flex flex-col items-center">
-              {Object.keys(songs)
-                .sort()
-                .map((songName, i, arr) => (
-                  <div className="flex flex-col w-full items-center">
-                    <div
-                      key={songName}
-                      className="flex justify-between w-[60%]"
-                    >
-                      <div>{songName}</div>
-                      <Cross
-                        onClick={() => {
-                          setSongs((songs) => {
-                            delete songs[songName];
-                            console.log("deleted " + songName);
-                            console.log(songs);
-                            return { ...songs };
-                          });
-                        }}
-                        className="remove-icon"
-                      />
-                    </div>
-                    {i != arr.length - 1 && (
-                      <div className="divider self-center w-[80%]" />
-                    )}
-                  </div>
-                ))}
+          <dialog ref={deleteDialogRef} className="modal">
+            <div className="modal-box">
+              <h3 className="font-bold text-lg">Zmazať všetky pesničky?</h3>
+              <p className="py-4">
+                Naozaj chceš zmazať všetkých {Object.keys(songs).length}{" "}
+                pesničiek? Táto akcia sa nedá vrátiť späť.
+              </p>
+              <div className="modal-action">
+                <form method="dialog">
+                  <button className="btn">Zrušiť</button>
+                </form>
+                <button className="btn btn-error" onClick={confirmDeleteAll}>
+                  Zmazať všetky
+                </button>
+              </div>
             </div>
-          )}
-        </div>
-      </div>
-      <button
-        onClick={() => {
-          if (Object.keys(songs).length != 0) {
-            navigate("/edit");
-          }
-        }}
-        className="btn btn-primary fixed bottom-5"
-      >
-        Ďalej
-      </button>
+            <form method="dialog" className="modal-backdrop">
+              <button>zavrieť</button>
+            </form>
+          </dialog>
+        </>
+      )}
     </div>
   );
 };
