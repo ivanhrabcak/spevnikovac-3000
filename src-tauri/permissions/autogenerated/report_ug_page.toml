@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-report-ug-page"
+description = "Enables the report_ug_page command without any pre-configured scope."
+commands.allow = ["report_ug_page"]
+
+[[permission]]
+identifier = "deny-report-ug-page"
+description = "Denies the report_ug_page command without any pre-configured scope."
+commands.deny = ["report_ug_page"]

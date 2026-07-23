@@ -7,6 +7,11 @@
   ],
   "permissions": [
     "core:default",
-    "dialog:default"
+    "dialog:default",
+    "allow-fetch",
+    "allow-get-editing-hints",
+    "allow-write-docx",
+    "allow-write-chordpro",
+    "allow-transpose"
   ]
 }

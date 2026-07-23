@@ -1,0 +1,17 @@
+{
+  "identifier": "ug-fetch",
+  "description": "Allow the hidden Ultimate Guitar Cloudflare-bypass window (labeled ug-fetch-*) to use the Tauri IPC bridge so its injected script can call report_ug_page back into Rust.",
+  "windows": [
+    "ug-fetch-*"
+  ],
+  "remote": {
+    "urls": [
+      "https://*.ultimate-guitar.com/*",
+      "https://ultimate-guitar.com/*"
+    ]
+  },
+  "permissions": [
+    "core:default",
+    "allow-report-ug-page"
+  ]
+}

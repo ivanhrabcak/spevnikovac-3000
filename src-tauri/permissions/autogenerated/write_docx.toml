@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-write-docx"
+description = "Enables the write_docx command without any pre-configured scope."
+commands.allow = ["write_docx"]
+
+[[permission]]
+identifier = "deny-write-docx"
+description = "Denies the write_docx command without any pre-configured scope."
+commands.deny = ["write_docx"]
