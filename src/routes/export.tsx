@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { SongsContext } from "../components/context/songs-context";
 import { ProgressTrackBar } from "../components/ProgressTrackBar";
 import { desktopDir, join } from "@tauri-apps/api/path";
-import { save } from "@tauri-apps/plugin-dialog";
+import { open, save } from "@tauri-apps/plugin-dialog";
 import { invoke } from "@tauri-apps/api/core";
 import ConfettiExplosion from "react-confetti-explosion";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +14,10 @@ export const ExportRoute = () => {
   const [savePath, setSavePath] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
   const [isDone, setIsDone] = useState(false);
+
+  const [chordproDir, setChordproDir] = useState<string | null>(null);
+  const [isChordproLoading, setChordproLoading] = useState(false);
+  const [isChordproDone, setChordproDone] = useState(false);
 
   useEffect(() => {
     const getSavePath = async () => {
@@ -47,6 +51,26 @@ export const ExportRoute = () => {
     setIsDone(true);
 
     console.log(result);
+  };
+
+  const startChordproExport = async () => {
+    if (chordproDir == null) return;
+
+    setChordproLoading(true);
+    const mappedChords = Object.keys(songs).map((k) => {
+      const [artist, song_name] = k.split(" - ");
+      const text = songs[k];
+
+      return { artist, song_name, text: text.nodes };
+    });
+
+    await invoke("write_chordpro", {
+      songs: mappedChords,
+      dir: chordproDir,
+    });
+
+    setChordproLoading(false);
+    setChordproDone(true);
   };
 
   return (
@@ -95,6 +119,30 @@ export const ExportRoute = () => {
           {!isLoading && "Uložiť"}
         </button>
       </form>
+
+      <div className="flex flex-col items-center w-full gap-3 mt-5">
+        <button
+          type="button"
+          className="btn"
+          onClick={async () => {
+            const dir = await open({ directory: true });
+            if (typeof dir === "string") setChordproDir(dir);
+          }}
+        >
+          {chordproDir ?? "Vybrať priečinok pre ChordPro"}
+        </button>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          disabled={chordproDir == null || isChordproDone}
+          onClick={startChordproExport}
+        >
+          {isChordproLoading && (
+            <span className="loading relative loading-spinner loading-md" />
+          )}
+          {!isChordproLoading && "Exportovať ako ChordPro"}
+        </button>
+      </div>
 
       {isDone && (
         <button
