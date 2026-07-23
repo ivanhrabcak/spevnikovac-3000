@@ -18,7 +18,7 @@
   },
   "productName": "spevnikovac-3000",
   "mainBinaryName": "spevnikovac-3000",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "identifier": "com.spevnikovac-3000.app",
   "plugins": {},
   "app": {
